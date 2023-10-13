@@ -1,7 +1,6 @@
 0x00. AirBnB clone - The console
 project done in teams of two(Biniyam Asfaw, yalelet dessalegn Mebrie)
 TASKS TO BE DONE
-
 0. README, AUTHORS
 GitHub repository: AirBnB_clone
 File: README.md, AUTHORS
