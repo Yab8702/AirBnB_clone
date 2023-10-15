@@ -18,13 +18,13 @@ class BaseModel:
 
         If kwargs is not empty:
         - Each key in kwargs is treated as an attribute name.
-        - Each value in kwargs is assigned as the value of\
+        - Each value in kwargs is assigned as the value of
         the corresponding attribute.
-        - 'created_at' and 'updated_at' strings in \
+        - 'created_at' and 'updated_at' strings in
         kwargs are converted to datetime objects.
 
         If kwargs is empty:
-        - A new instance is created with a unique identifier and\
+        - A new instance is created with a unique identifier and
         current datetime.
         """
 
@@ -48,8 +48,8 @@ class BaseModel:
         """Returns a string representation of the object.
         Format: [<class name>] (<self.id>) <self.__dict__> """
 
-        return "[{}] ({}) {}".\
-            format(self.__class__.__name__, self.id, self.__dict__)
+        return "[{}] ({}) {}".
+        format(self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
         """Updates the 'updated_at' attribute with the current datetime."""
@@ -58,11 +58,11 @@ class BaseModel:
         storage.save()
 
     def to_dict(self):
-        """Returns a dictionary representation \
+        """Returns a dictionary representation
         of the object for serialization"""
 
         dict_obj = self.__dict__.copy()
-        dict_obj['__class__'] = self.__class__.__name
+        dict_obj['__class__'] = self.__class__.__name__
         dict_obj['created_at'] = self.created_at.isoformat()
         dict_obj['updated_at'] = self.updated_at.isoformat()
         return dict_obj
