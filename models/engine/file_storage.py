@@ -1,6 +1,17 @@
 #!/usr/bin/python3
 import json
 from os.path import isfile
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+
+
+classes = {"BaseModel": BaseModel, "User": User, "State": State,
+           "Place": Place, "City": City, "Amenity": Amenity, "Review": Review}
 
 
 class FileStorage:
@@ -30,8 +41,7 @@ class FileStorage:
             with open(self.__file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
                 for key, value in data.items():
-                    class_name, obj_id = key.split(".")
-                    self.__objects[key] = globals()[class_name](**value)
+                    self.__objects[key] = classes[data[key]["__class__"]](**data[key])
 
 
 storage = FileStorage()
