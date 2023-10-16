@@ -3,7 +3,7 @@
 
 import uuid
 from datetime import datetime
-from models.engine.file_storage import storage
+from models import storage
 
 
 class BaseModel:
@@ -48,8 +48,8 @@ class BaseModel:
         """Returns a string representation of the object.
         Format: [<class name>] (<self.id>) <self.__dict__> """
 
-        return ("[{}] ({}) {}".
-                format(self.__class__.__name__, self.id, self.__dict__))
+        return "[{}] ({}) {}".\
+            format(self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
         """Updates the 'updated_at' attribute with the current datetime."""

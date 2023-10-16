@@ -44,4 +44,3 @@ class FileStorage:
                     self.__objects[key] = classes[data[key]["__class__"]](**data[key])
 
 
-storage = FileStorage()
