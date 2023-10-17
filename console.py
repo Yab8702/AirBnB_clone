@@ -1,208 +1,214 @@
 #!/usr/bin/python3
-""" Console class to run code in cmd module """
-
+"""
+Class CommandConsole for Airbnb
+"""
 import cmd
-import json
+from datetime import datetime
 from models.base_model import BaseModel
-from models.user import User
-from models.engine.file_storage import FileStorage
-from models import storage
+from models.place import Place
 from models.state import State
 from models.city import City
-from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
-import re
+from models.user import User
+import models
+
+allowed_class = {"BaseModel": BaseModel, "Place": Place, "State": State,
+                 "City": City, "Amenity": Amenity, "Review": Review,
+                 "User": User}
 
 
 class HBNBCommand(cmd.Cmd):
     """
-    HBNBCommand is a command-line interface for managing instances of various
-    classes in a hypothetical system.
-
-    Available Commands:
-    - create: Create a new instance of a class.
-    - show: Display information about a specific instance.
-    - destroy: Remove a specific instance.
-    - all: List all instances of a specific class or all classes.
-    - count: Count the number of instances of a specific class.
-    - update: Update attributes of a specific instance.
-
-    Usage: Run the script and use the above commands to interact the system.
+    HBNB Class
     """
-    prompt = "(hbnb) "
+    prompt = '(hbnb) '
 
-    classes = ["BaseModel",
-               "User",
-               "State",
-               "City",
-               "Place",
-               "Amenity",
-               "Review"]
+    def do_quit(self, line):
+        """quit command: exit the program"""
+        return True
+
+    def do_EOF(self, line):
+        """End of File command: exit the program"""
+        return True
 
     def emptyline(self):
-        """Do nothing upon receiving an empty line."""
+        """overridden to not do nothing"""
         pass
 
-    def do_quit(self, args):
-        """
-        Quit the program.
-        """
-        return True
-
-    def do_EOF(self, args):
-        """
-        End of file (Ctrl+D).
-        """
-        print("")
-        return True
-
-    def default(self, args):
-        """
-        Default behavior for cmd module when input is invalid.
-        """
-        arg_dict = {
-            "all": self.do_all,
-            "show": self.do_show,
-            "destroy": self.do_destroy,
-            "count": self.do_count,
-            "update": self.do_update
-        }
-        match = re.search(r"\.", args)
-        if match is not None:
-            arg_list = [args[:match.span()[0]], args[match.span()[1]:]]
-            match = re.search(r"\((.*?)\)", arg_list[1])
-            if match is not None:
-                command = [arg_list[1][:match.span()[0]], match.group()[1:-1]]
-                if command[0] in arg_dict.keys():
-                    call = "{} {}".format(arg_list[0], command[1])
-                    return arg_dict[command[0]](call)
-        print("*** Unknown syntax: {}".format(args))
-        return False
-
-    def do_create(self, args):
-        """
-        Create a new instance of a class.
-        Usage: create <class_name>
-        """
-        args_list = args.split()
-        if len(args_list) < 1:
-            print('** class name missing **')
-        elif args_list[0] not in self.classes:
-            print("** class doesn't exist **")
-        else:
-            print(eval(args_list[0])().id)
-            storage.save()
-
-    def do_show(self, args):
-        """
-        Display information about a specific instance.
-        Usage: show <class_name> <instance_id>
-        """
-        args_list = args.split()
-        if len(args_list) < 1:
-            print('** class name missing **')
-        elif args_list[0] not in self.classes:
-            print("** class doesn't exist **")
-        elif len(args_list) < 2:
-            print('** instance id missing **')
-        else:
-            objdict = storage.all()
-            id_number = args_list[1].strip('"\'')
-            if f"{args_list[0]}.{id_number}" in objdict:
-                print(objdict[f"{args_list[0]}.{id_number}"])
+    def precmd(self, line):
+        """ Edit given command to allow second type of input"""
+        split_line = line.split("(")
+        flag_instance = 0
+        if(len(split_line) > 1):
+            tmp = split_line[0].split(".", 1)
+            flag_instance = 1
+        if (flag_instance == 1):
+            cmd1 = tmp[0]
+            cmd2 = tmp[1]
+            tmp3 = split_line[1].split(")")
+            cmd3 = tmp3[0].split(",", 1)
+            if (len(cmd3[0]) == 0):
+                line = cmd2 + " " + cmd1
             else:
-                print('** no instance found **')
+                cmd_id = cmd3[0].replace('"', '')
+                line = cmd2 + " " + cmd1 + " " + cmd_id
+                if (len(cmd3) == 1):
+                    line = line
+                else:
+                    dicty = cmd3[1].replace('{', ' ').replace(':', ' ') \
+                        .replace(',', ' ').replace('}', ' ') \
+                        .replace("'", ' ').replace('"', ' ')
+                    dicty = dicty.split()
 
-    def do_destroy(self, args):
-        """
-        Remove a specific instance.
-        Usage: destroy <class_name> <instance_id>
-        """
-        args_list = args.split()
-        if len(args_list) < 1:
-            print('** class name missing **')
-        elif args_list[0] not in self.classes:
-            print("** class doesn't exist **")
-        elif len(args_list) < 2:
-            print('** instance id missing **')
+                    flag = 0
+                    for n in dicty:
+                        init = cmd1 + " " + cmd_id
+                        if flag == 0:
+                            line = init + ' ' + n
+                            flag = 1
+                        elif flag == 1:
+                            line = line + ' ' + '"' + n + '"'
+                            flag = 0
+                            self.do_update(line)
+                    line = ""
         else:
-            objdict = storage.all()
-            id_number = args_list[1].strip('"\'')
-            if f"{args_list[0]}.{id_number}" in objdict:
-                del objdict[f"{args_list[0]}.{id_number}"]
-                storage.save()
-            else:
-                print('** no instance found **')
+            line = line
+        # print(line)
+        return cmd.Cmd.precmd(self, line)
 
-    def do_all(self, args):
-        """
-        List all instances of a specific class or all classes.
-        Usage: all [class_name]
-        """
-        args_list = args.split()
-        if len(args_list) < 1:
-            print('** class name missing **')
-        elif args_list[0] not in self.classes:
+    def do_create(self, line):
+        """Creates a new instance of BaseModel, saves it (to the JSON file)
+            and prints the id"""
+        if len(line) == 0:
+            print("** class name missing **")
+            return
+        try:
+            string = line + "()"
+            instance = eval(string)
+            print(instance.id)
+            instance.save()
+        except Exception as f:
             print("** class doesn't exist **")
-        else:
-            objdict = storage.all()
-            all_instances = []
-            for k, v in objdict.items():
-                split_list = k.split('.')
-                if args_list[0] in split_list:
-                    all_instances.append(str(v))
-            if len(objdict) == 0:
-                print('** no instance found **')
-            else:
-                print(all_instances)
 
-    def do_count(self, args):
-        """
-        Count the number of instances of a specific class.
-        Usage: count <class_name>
-        """
-        args_list = args.split()
-        count = 0
-        objdict = storage.all()
-        for k, v in objdict.items():
-            split_list = k.split('.')
-            if args_list[0] in split_list:
-                count += 1
-        print(count)
-
-    def do_update(self, args):
-        """
-        Update attributes of a specific instance.
-        Usage: update <class_name> <instance_id> <attribute_name>
-        "<attribute_value>"
-        """
-        args_list = args.split()
-        if len(args_list) < 1:
-            print('** class name missing **')
-        elif args_list[0] not in self.classes:
+    def do_show(self, line):
+        """Prints the string representation of an instance
+            based on the class name and id.
+            Ex: $ show BaseModel 1234-1234-1234."""
+        cmd_line = line.split()
+        if len(cmd_line) == 0:
+            print("** class name missing **")
+            return
+        elif cmd_line[0] not in allowed_class.keys():
             print("** class doesn't exist **")
-        elif len(args_list) < 2:
-            print('** instance id missing **')
-        elif len(args_list) < 3:
-            print('** attribute name missing **')
-        elif len(args_list) < 4:
-            print("** value missing **")
-        else:
-            objdict = storage.all()
-            ar1 = args_list[1].strip("'\"")
-            obj_key = args_list[0].strip("'\"") + '.' + ar1
-            obj_key = obj_key.strip(',""')[:-1]
-            print(obj_key)
-
-            if obj_key in objdict:
-                obj = objdict[obj_key]
-                attr_name = args_list[2].strip("'\"")[:-2]
-                attr_value = args_list[3].strip("'\"")
-                setattr(obj, attr_name, attr_value)
-                storage.save()
+        elif len(cmd_line) == 1:
+            print("** instance id missing **")
+        elif len(cmd_line) == 2:
+            instance = cmd_line[0] + "." + cmd_line[1]
+            if instance in models.storage.all():
+                print(models.storage.all()[instance])
             else:
                 print("** no instance found **")
+
+    def do_destroy(self, line):
+        """Deletes an instance based on the class name and
+        id (save the change into the JSON file).
+        Ex: $ destroy BaseModel 1234-1234-1234"""
+        cmd_line = line.split()
+        if len(cmd_line) == 0:
+            print("** class name missing **")
+            return
+        elif cmd_line[0] not in allowed_class.keys():
+            print("** class doesn't exist **")
+        elif len(cmd_line) == 1:
+            print("** instance id missing **")
+        elif len(cmd_line) == 2:
+            instance = cmd_line[0] + "." + cmd_line[1]
+            if instance in models.storage.all():
+                del models.storage.all()[instance]
+                models.storage.save()
+            else:
+                print("** no instance found **")
+
+    def do_all(self, line):
+        """Prints all string representation of all instances
+            based or not on the class name.
+            Ex: $ all BaseModel or $ all."""
+        cmd_line = line.split()
+        if len(cmd_line) == 0 or cmd_line[0] == "BaseModel":
+            print('["', end="")
+            flag = 0
+            for obj_id in models.storage.all().keys():
+                if flag == 1:
+                    print('", "', end="")
+                obj = models.storage.all()[obj_id]
+                print(obj, end="")
+                flag = 1
+            print('"]')
+        elif cmd_line[0] not in allowed_class.keys():
+            print("** class doesn't exist **")
+        else:
+            print('["', end="")
+            # result = []
+            flag = 0
+            len_class = len(cmd_line[0])
+            for obj_id in models.storage.all().keys():
+                if obj_id[:len_class] == cmd_line[0]:
+                    if flag == 1:
+                        print('", "', end="")
+                    obj = models.storage.all()[obj_id]
+                    print(obj, end="")
+                    flag = 1
+            print('"]')
+
+    def do_update(self, line):
+        """Updates an instance based on the class name and id
+            by adding or updating attribute
+            (save the change into the JSON file).
+            - Usage:
+            update <class name> <id> <attribute name> "<attribute value>"
+            - Ex:
+            $ update BaseModel 1234-1234-1234 email "aibnb@holbertonschool.com"
+            - Only one attribute can be updated at the time"""
+        cmd_line = line.split()
+        untouchable = ["id", "created_at", "updated_at"]
+        objets = models.storage.all()
+        if not line:
+            print("** class name missing **")
+        elif cmd_line[0] not in allowed_class.keys():
+            print("** class doesn't exist **")
+        elif len(cmd_line) == 1:
+            print("** instance id missing **")
+        else:
+            instance = cmd_line[0] + "." + cmd_line[1]
+            if instance not in models.storage.all():
+                print("** no instance found **")
+            elif len(cmd_line) < 3:
+                print("** attribute name missing **")
+            elif len(cmd_line) < 4:
+                print("** value missing **")
+            elif cmd_line[2] not in untouchable:
+                ojb = objets[instance]
+                ojb.__dict__[cmd_line[2]] = cmd_line[3]
+                ojb.updated_at = datetime.now()
+                ojb.save()
+
+    def do_count(self, line):
+        "count instances of the class"
+
+        cmd_line = line.split()
+
+        if cmd_line[0] not in allowed_class:
+            return
+        else:
+            counter = 0
+            keys_list = models.storage.all().keys()
+            for search in keys_list:
+                len_search = len(cmd_line[0])
+                if search[:len_search] == cmd_line[0]:
+                    counter += 1
+                    # print(search)
+            print(counter)
 
 
 if __name__ == '__main__':
