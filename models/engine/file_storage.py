@@ -1,6 +1,9 @@
 #!/usr/bin/python3
+"""
+Class FileStorage
+"""
+
 import json
-from os.path import isfile
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -15,32 +18,40 @@ classes = {"BaseModel": BaseModel, "User": User, "State": State,
 
 
 class FileStorage:
+    """serialize instance to json file and deserialize json file to instance"""
+
+    # string - path to the JSON file (ex: file.json)
     __file_path = "file.json"
+    # dictionary - empty but will store all objects by <class name>.id
     __objects = {}
 
     def all(self):
-        """Returns the dictionary __objects."""
+        """returns the dictionary __objects"""
         return self.__objects
 
     def new(self, obj):
-        """Sets obj in __objects with key <obj class name>.id."""
-        key = f"{obj.__class__.____name__}.{obj.id}"
-        self.__objects[key] = obj
+        """sets in __objects the obj with key <obj class name>.id"""
+        if obj is not None:
+            key = obj.__class__.__name__ + "." + obj.id
+            self.__objects[key] = obj
 
     def save(self):
-        """Serializes __objects to the JSON file (__file_path)."""
-        data = {key: obj.to_dict() for key, obj in self.__objects.items()}
-        with open(self.__file_path, "w", encoding="utf-8") as file:
-            json.dump(data, file)
+        """serializes __objects to the JSON file (path: __file_path)"""
+        json_obj = {}
+        for key in self.__objects:
+            json_obj[key] = self.__objects[key].to_dict()
+        with open(self.__file_path, 'w', encoding='UTF-8') as file:
+            json.dump(json_obj, file)
 
     def reload(self):
-        """Deserializes the JSON file to __objects
-        if the file (__file_path) exists; otherwise, do nothing."""
-
-        if isfile(self.__file_path):
-            with open(self.__file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                for key, value in data.items():
-                    self.__objects[key] = classes[data[key]["__class__"]](**data[key])
-
-
+        """deserializes the JSON file to __objects"""
+        # only if the JSON file (__file_path) exists
+        # otherwise, do nothing. If the file doesn’t exist
+        #  no exception should be raised
+        try:
+            with open(self.__file_path, 'r', encoding='UTF-8') as file:
+                jn = json.load(file)
+            for key in jn:
+                self.__objects[key] = classes[jn[key]["__class__"]](**jn[key])
+        except FileNotFoundError:
+            pass

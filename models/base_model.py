@@ -1,68 +1,52 @@
 #!/usr/bin/python3
-"""base model modules"""
+"""
+Class BaseModel
+"""
 
-import uuid
 from datetime import datetime
-from models import storage
+import uuid
+import models
+# dtm = date format
+dtm = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 class BaseModel:
-    """BaseModel class serves as the base class for other classes and
-    defines common attributes and methods"""
+    """Base Model"""
 
     def __init__(self, *args, **kwargs):
-        """Initializes a new instance of the BaseModel class.
+        """Initialize a BaseModel"""
+        if kwargs:
+            for key, val in kwargs.items():
+                if key != '__class__':
+                    setattr(self, key, val)
+            
+                self.created_at = datetime.strptime(kwargs["created_at"], dtm)
+            if hasattr(self, 'updated_at') and type(self.updated_at) is str:
+                self.updated_at = datetime.strptime(
+                    kwargs["updated_at"], dtm)
 
-        Args:
-        - **kwargs: A dictionary of attribute names.
-
-        If kwargs is not empty:
-        - Each key in kwargs is treated as an attribute name.
-        - Each value in kwargs is assigned as the value of
-        the corresponding attribute.
-        - 'created_at' and 'updated_at' strings in
-        kwargs are converted to datetime objects.
-
-        If kwargs is empty:
-        - A new instance is created with a unique identifier and
-        current datetime.
-        """
-
-        if kwargs is not None and kwargs != {}:
-            for key in kwargs:
-                if key == "created_at":
-                    self.__dict__["created_at"] = datetime.strptime(
-                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-                elif key == "updated_at":
-                    self.__dict__["updated_at"] = datetime.strptime(
-                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
-                else:
-                    self.__dict__[key] = kwargs[key]
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
-            storage.new(self)
+            models.storage.new(self)
 
     def __str__(self):
-        """Returns a string representation of the object.
-        Format: [<class name>] (<self.id>) <self.__dict__> """
-
-        return "[{}] ({}) {}".\
-            format(self.__class__.__name__, self.id, self.__dict__)
+        """str representation"""
+        return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
+                                         self.__dict__)
 
     def save(self):
-        """Updates the 'updated_at' attribute with the current datetime."""
-
+        """updates the public ins attr upd_at with the curren one"""
         self.updated_at = datetime.now()
-        storage.save()
+        models.storage.save()
 
     def to_dict(self):
-        """Returns a dictionary representation
-        of the object for serialization"""
-
-        dict_obj = self.__dict__.copy()
-        dict_obj['__class__'] = self.__class__.__name__
-        dict_obj['created_at'] = dict_obj['created_at'].isoformat()
-        dict_obj['updated_at'] = dict_obj['updated_at'].isoformat()
-        return dict_obj
+        """ returns a dic containing keys and values of the instance"""
+        n_dict = self.__dict__.copy()
+        if "created_at" in n_dict:
+            n_dict["created_at"] = n_dict["created_at"].strftime(dtm)
+        if "updated_at" in n_dict:
+            n_dict["updated_at"] = n_dict["updated_at"].strftime(dtm)
+        n_dict["__class__"] = self.__class__.__name__
+        return n_dict
