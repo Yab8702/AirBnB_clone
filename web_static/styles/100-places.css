@@ -1,0 +1,113 @@
+.places {
+  margin-left: 20px;
+}
+.places h1,
+.places h2 {
+  font-size: 30px;
+}
+.places h2 {
+  display: inline-block;
+  margin-left: 30px;
+}
+.places article {
+  width: 390px;
+  margin: 20px;
+  border: 1px solid #ff5a5f;
+  border-radius: 4px;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  left: 5%;
+  bottom: 20px;
+}
+div.suit {
+  width: 90%;
+}
+
+.suit article {
+  display: block;
+  margin: 20px auto;
+}
+.suit h2 {
+  margin-left: 60px;
+}
+.price_by_night {
+  border: 4px solid #ff5a5f;
+  border-radius: 50%;
+  min-width: 60px;
+  height: 60px;
+  font-size: 22px;
+  display: inline-block;
+  color: #ff5a5f;
+  position: relative;
+  left: 50px;
+  top: 20px;
+  margin-bottom: 30px;
+}
+.information {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  width: 95%;
+  height: 80px;
+  line-height: 0;
+  margin: 10px auto;
+}
+.max_guest,
+.number_rooms,
+.number_bathrooms {
+  width: 100px;
+}
+.image_guest {
+  background: url(../images/icon_group.png) no-repeat center;
+  height: 50px;
+}
+.img_room {
+  background: url(../images/icon_bed.png) no-repeat center;
+  height: 50px;
+}
+.img_bathrooms {
+  background: url(../images/icon_bath.png) no-repeat center;
+  height: 50px;
+}
+.description p,
+.user p {
+  text-align: left;
+  margin-left: 20px;
+}
+.places .amenities,
+.reviews {
+  margin-top: 40px;
+  width: 95%;
+  text-align: left;
+}
+.places .amenities > h2,
+.reviews > h2 {
+  font-size: 16px;
+  border-bottom: 1px solid #ddd;
+  display: block;
+}
+.places .reviews h3 {
+  font-size: 14px;
+}
+.places .reviews p {
+  font-size: 12px;
+}
+article .amenities ul li {
+  background-repeat: no-repeat;
+  background-position: 2px;
+  padding-left: 30px;
+  background-size: 20px;
+  margin-bottom: 10px;
+}
+article .amenities ul li:nth-child(1) {
+  background-image: url("../images/icon_tv.png");
+}
+article .amenities ul li:nth-child(2) {
+  background-image: url("../images/icon_wifi.png");
+}
+article .amenities ul li:nth-child(3),
+article .amenities ul.pov_pets li:nth-child(1) {
+  background-image: url("../images/icon_pets.png");
+}
