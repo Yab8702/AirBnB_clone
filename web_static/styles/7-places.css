@@ -1,0 +1,21 @@
+.places h1,
+.places h2 {
+  font-size: 30px;
+}
+
+.places article {
+  width: 390px;
+  margin: 10px 30px;
+  border: 1px solid #ff5a5f;
+  border-radius: 4px;
+  text-align: center;
+  display: inline-block;
+}
+div.suit {
+  width: 90%;
+}
+
+.suit article {
+  display: block;
+  margin: 20px auto;
+}

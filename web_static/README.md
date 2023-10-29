@@ -1,4 +1,5 @@
 0x01. AirBnB clone - Web static
+<<<<<<< HEAD
 AUTHORS: Bini16
 TASKS
 0. Inline styling
@@ -31,3 +32,5 @@ Improve the Places section by using Flexible boxes for all Place articles
 Improve the page by adding responsive design to display correctly in mobile or small screens.
 12. Accessibility
 Improve the page by adding Accessibility support
+=======
+>>>>>>> 9d87b8f2ded4842ff868fb9787014f0d51c043dd
