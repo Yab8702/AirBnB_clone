@@ -1,4 +1,4 @@
-# Hbnb console
+# The AirBnB console
 
 ![airbnb_img](https://i.imgur.com/symULZt.png)
 
@@ -16,11 +16,11 @@ And the final data diagram looks like this:
 
 ![data_diagram](https://i.imgur.com/I7VURNR.jpg)
 
-# First step and GOAl of this repository: Write a command interpreter to manage your AirBnB objects.
+# First step and goal of this repository: Write a command interpreter to manage your AirBnB objects.
 
 This is the first step towards building the first full web application: the AirBnB clone. This first step is very important because we will use what we build during this project with all other following projects: HTML/CSS templating, database storage, API, front-end integration…
 
-## What’s a command interpreter?
+## What is a command interpreter?
 
 Do you remember the Shell? It’s exactly the same but limited to a specific use-case. In our case, we want to be able to manage the objects of our project:
 
@@ -369,4 +369,4 @@ guillaume@ubuntu:~/AirBnB$
 
 ## Authors:
 * yalelet dessalegn |    [GitHub](https://github.com/yab8702) 
-* MESFIN BEBULO | [GitHub](https://github.com/Mesfin67) 
+* Mesfin Bebulo | [GitHub](https://github.com/Mesfin67) 
